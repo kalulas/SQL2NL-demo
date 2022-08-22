@@ -40,8 +40,6 @@ Flask >= 2.1.1
 
 PyTorch 1.8.1
 
-**examples:**
-
 ```bash
 conda create -n [env_name] python=3.8.12
 # activate env
