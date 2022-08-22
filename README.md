@@ -1,6 +1,6 @@
 # SQL2NL 演示项目
 
-// TODO ...
+为sql2nl项目开发的可交互网页应用，后端基于Flask，前端基于Vue
 
 ### 项目结构
 
@@ -52,7 +52,7 @@ vue@3.2.37(dependencies:vitejs/plugin-vue@^3.0.1, vite@^3.0.4)
 
 ```bash
 # ./frontend/
-npm install vue@latest
+npm init vue@latest
 ```
 
 项目构建参数参考（不需要重复create-vue）

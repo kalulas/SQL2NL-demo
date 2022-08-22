@@ -12,7 +12,7 @@ export default defineConfig({
     }
   },
   build: {
-    outDir: '../../backend/flaskr/dist', // 输出到backend项目目录
-    assetsDir: 'static/assets', // 静态资源目录
+    outDir: 'dist',
+    assetsDir: 'static', // 静态资源目录
   }
 })
