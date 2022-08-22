@@ -1,9 +1,9 @@
-from flask import (Blueprint, request, redirect, url_for)
+from flask import Blueprint, request, redirect
 
 bp = Blueprint('predict', __name__, url_prefix="/predict")
 
 @bp.route('/', methods=('GET', 'POST'))
-def index():
+def predict_index():
     if request.method == 'GET':
         return redirect('/../') # to home page
     

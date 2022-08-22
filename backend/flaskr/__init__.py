@@ -24,11 +24,9 @@ def create_app(test_config=None):
     except OSError:
         pass
 
-    @app.route('/')
-    def _():
-        return '<p>index.html WIP</p><img src="https://tse1-mm.cn.bing.net/th/id/OIP-C.tsfohpXnAjmqwuAEBBhn8AHaEf?pid=ImgDet&rs=1"/>'
-
     from . import predict
     app.register_blueprint(predict.bp)
+    from . import homepage
+    app.register_blueprint(homepage.bp)
 
     return app

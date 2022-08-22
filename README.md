@@ -34,11 +34,9 @@
 
 #### backend
 
-python >= 3.8.12
-
-Flask >= 2.1.1
-
-PyTorch 1.8.1
+1. python >= 3.8.12
+2. Flask >= 2.1.1
+3. PyTorch 1.8.1
 
 ```bash
 conda create -n [env_name] python=3.8.12
@@ -74,6 +72,20 @@ npm install vue@latest
 
 ### 启动命令
 
+先生成frontend内容后启动backend
+
+#### frontend
+
+```bash
+# ./frontend/
+  cd sql2nl-demo
+  npm install
+  npm run dev # 开发测试
+  npm run build # 部署，生成后将dist内容复制到 ./backend/flaskr/对应目录下
+```
+
+
+
 #### backend
 
 ```bash
@@ -90,13 +102,9 @@ $ flask run --host=0.0.0.0
 > flask run --host=0.0.0.0
 ```
 
-#### frontend
+注意，windows下启动服务器需要将注册表"[HKEY_CLASSES_ROOT\.js]"对应内容设置为"Content Type"="text/javascript"，否则发送给浏览器的js脚本存在ContentType格式问题
 
-```bash
-  cd sql2nl-demo
-  npm install
-  npm run dev
-```
+![Snipaste_2022-08-22_17-54-12](README/Snipaste_2022-08-22_17-54-12.png)
 
 
 
@@ -107,6 +115,8 @@ Flask中文：https://dormousehole.readthedocs.io/en/latest/index.html
 Flask快速上手：https://dormousehole.readthedocs.io/en/latest/quickstart.html
 
 Vue官方中文：https://cn.vuejs.org/guide/introduction.html
+
+Vite官方中文：https://cn.vitejs.dev/config/
 
 Python的Web框架Flask + Vue 生成漂亮的词云：https://cloud.tencent.com/developer/article/1592758
 
