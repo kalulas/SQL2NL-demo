@@ -35,8 +35,9 @@
 #### backend
 
 1. python >= 3.8.12
-2. Flask >= 2.1.1
-3. PyTorch 1.8.1
+2. anaconda3 / miniconda3
+3. Flask >= 2.1.1
+4. PyTorch 1.8.1
 
 ```bash
 conda create -n [env_name] python=3.8.12
@@ -50,14 +51,11 @@ node.js(16.17.0 LTS https://nodejs.org/en/download/)
 
 vue@3.2.37(dependencies:vitejs/plugin-vue@^3.0.1, vite@^3.0.4)
 
+项目构建参考
+
 ```bash
 # ./frontend/
 npm init vue@latest
-```
-
-项目构建参数参考（不需要重复create-vue）
-
-```bash
 √ Project name: ... sql2nl-demo
 √ Add TypeScript? ... No / Yes
 √ Add JSX Support? ... No / Yes
@@ -72,39 +70,34 @@ npm init vue@latest
 
 ### 启动命令
 
-先生成frontend内容后启动backend
+windows下仅支持frontend(vue)项目开发测试，部署需要在linux上执行
 
-#### frontend
+#### frontend 开发
 
 ```bash
 # ./frontend/
   cd sql2nl-demo
   npm install
-  npm run dev # 开发测试
-  npm run build # 部署，生成后将dist内容复制到 ./backend/flaskr/对应目录下
+  npm run dev # 开发测试用，使用日志中提供的ip访问即可
 ```
 
 
 
-#### backend
+#### backend部署
 
 ```bash
-# Linux(bash)
-# ./backend/
-$ export FLASK_APP=flaskr
-$ export FLASK_ENV=development
-$ flask run --host=0.0.0.0
-
-# windows(cmd)
-# ./backend/
-> set FLASK_APP=flaskr
-> set FLASK_ENV=development
-> flask run --host=0.0.0.0
+# Linux only
+# 项目根目录执行
+$ ./deploy.sh [conda-env-name] [path-to-conda.sh]
 ```
 
-注意，windows下启动服务器需要将注册表"[HKEY_CLASSES_ROOT\.js]"对应内容设置为"Content Type"="text/javascript"，否则发送给浏览器的js脚本存在ContentType格式问题
+脚本执行以下操作：
 
-![Snipaste_2022-08-22_17-54-12](README/Snipaste_2022-08-22_17-54-12.png)
+1. 进入vue项目目录进行build
+2. 清空flask资源目录
+3. 将vue项目build生成目录下的内容拷贝到flask资源目录
+4. 切换到指定conda环境下
+5. 启动flask服务器
 
 
 
