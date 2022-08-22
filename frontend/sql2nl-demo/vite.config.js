@@ -10,5 +10,9 @@ export default defineConfig({
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
     }
+  },
+  build: {
+    outDir: '../../backend/flaskr/dist', // 输出到backend项目目录
+    assetsDir: 'static/assets', // 静态资源目录
   }
 })
