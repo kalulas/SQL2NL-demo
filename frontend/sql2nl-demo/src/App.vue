@@ -1,19 +1,18 @@
 <script setup>
-import HelloWorld from './components/HelloWorld.vue'
+import Greetings from './components/Greetings.vue'
 import ToggleButton from './components/ToggleButton.vue'
-// import TheWelcome from './components/TheWelcome.vue'
 </script>
 
 <script>
 export default {
   data() {
     return {
-      titleMessage: "sql2nl-demo站点施工中",
+      titleMessage: "sql2nl-demo 站点施工中",
       targetModels: [{ id: 1, name: "model1" }, { id: 2, name: "model2" }, { id: 3, name: "model3" }, { id: 4, name: "model4" }, { id: 5, name: "model5" }]
     }
   },
   components: {
-    HelloWorld,
+    Greetings,
     ToggleButton
   },
   methods: {
@@ -27,19 +26,25 @@ export default {
 
 <template>
   <header>
-    <img alt="Vue logo" class="logo" src="./assets/logo.svg" width="125" height="125" />
-
+    <img alt="under construction" class="logo" src="./assets/drill.gif" width="200" height="150" />
     <div class="wrapper">
-      <HelloWorld :msg="titleMessage" />
-      <ol>
-        <!-- TODO: margin to class? -->
-        <li style="margin-bottom: 5px;" v-for="model in targetModels">
-          <ToggleButton :title="model.name" :id="model.id" :key="model.id"
-            @toggleValueChanged="onModelToggleValueChanged" />
-        </li>
-      </ol>
+      <Greetings :msg="titleMessage" />
     </div>
   </header>
+
+  <!-- <div class="content-item">
+    TODO: input
+  </div> -->
+  <div class="content-item">
+    <ToggleButton v-for="model in targetModels" :title="model.name" :id="model.id" :key="model.id"
+      @toggleValueChanged="onModelToggleValueChanged" />
+  </div>
+  <!-- <div class="content-item">
+    TODO: submit btn
+  </div>
+  <div class="content-item">
+    TODO: outcome
+  </div> -->
 </template>
 
 <style scoped>
@@ -50,6 +55,13 @@ header {
 .logo {
   display: block;
   margin: 0 auto 2rem;
+}
+
+.content-item {
+  display: flex;
+  justify-content: center;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
 }
 
 @media (min-width: 1024px) {

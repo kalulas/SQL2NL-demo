@@ -14,17 +14,21 @@ export default {
 </script>
 
 <template>
-<!-- reference: https://www.w3schools.com/howto/howto_css_switch.asp -->
-<p>
+<!-- reference: https://www.w3schools.com/howto/howto_css_switch.asp-->
+<div class="toggle-btn">
 <label class="switch">
   <input type="checkbox" @change="onToggleValueChanged">
   <span class="slider round"></span>
 </label>
 <label>{{ title }}</label>
-</p>
+</div>
 </template>
 
 <style scoped>
+.toggle-btn {
+  display: inline-flex;
+}
+
 .switch {
   position: relative;
   display: inline-block;

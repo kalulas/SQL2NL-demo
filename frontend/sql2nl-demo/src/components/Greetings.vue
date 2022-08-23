@@ -9,7 +9,7 @@ defineProps({
 
 <template>
   <div class="greetings">
-    <h1 class="green">{{ msg }}</h1>
+    <h1 class="title-text">{{ msg }}</h1>
     <h3>
       A project created with
       <a target="_blank" href="https://vitejs.dev/">Vite</a> +
