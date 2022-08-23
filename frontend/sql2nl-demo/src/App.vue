@@ -1,6 +1,28 @@
 <script setup>
 import HelloWorld from './components/HelloWorld.vue'
-import TheWelcome from './components/TheWelcome.vue'
+import ToggleButton from './components/ToggleButton.vue'
+// import TheWelcome from './components/TheWelcome.vue'
+</script>
+
+<script>
+export default {
+  data() {
+    return {
+      titleMessage: "sql2nl-demo站点施工中",
+      targetModels: [{ id: 1, name: "model1" }, { id: 2, name: "model2" }, { id: 3, name: "model3" }, { id: 4, name: "model4" }, { id: 5, name: "model5" }]
+    }
+  },
+  components: {
+    HelloWorld,
+    ToggleButton
+  },
+  methods: {
+    onModelToggleValueChanged(modelID) {
+      console.log(`toggle[${modelID}] value is changed`)
+    }
+  }
+}
+
 </script>
 
 <template>
@@ -8,13 +30,16 @@ import TheWelcome from './components/TheWelcome.vue'
     <img alt="Vue logo" class="logo" src="./assets/logo.svg" width="125" height="125" />
 
     <div class="wrapper">
-      <HelloWorld msg="SQL2NL demo 站点施工中" />
+      <HelloWorld :msg="titleMessage" />
+      <ol>
+        <!-- TODO: margin to class? -->
+        <li style="margin-bottom: 5px;" v-for="model in targetModels">
+          <ToggleButton :title="model.name" :id="model.id" :key="model.id"
+            @toggleValueChanged="onModelToggleValueChanged" />
+        </li>
+      </ol>
     </div>
   </header>
-
-  <main>
-    <TheWelcome />
-  </main>
 </template>
 
 <style scoped>
