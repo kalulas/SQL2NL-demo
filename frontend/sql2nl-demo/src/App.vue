@@ -59,6 +59,7 @@ header {
 
 .content-item {
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
   margin-top: 1rem;
   margin-bottom: 1rem;
