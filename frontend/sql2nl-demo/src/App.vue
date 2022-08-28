@@ -32,9 +32,6 @@ export default {
   computed: {
   },
   methods: {
-    getSelected(){
-      return this.selectedModels
-    },
     updateSelected(selectedArray){
       this.selectedModels = selectedArray
       console.log("selectedModels is current: " + this.selectedModels)
@@ -44,6 +41,7 @@ export default {
       console.log("response:")
       console.log(response)
       console.log(response.config.data)
+      this.outputValue = response.data
     },
     onSubmitError(response){
       console.log("error response:")
@@ -82,7 +80,7 @@ export default {
   <div class="content-item">
     <label class="content-item-title">模型</label>
     <ToggleButton v-for="model in targetModels" 
-    :title="model.name" :selected="model.selected" :id="model.id" :selectedModels="getSelected()" @update:selectedModels="updateSelected" :key="model.id"/>
+    :title="model.name" :selected="model.selected" :id="model.id" :selectedModels="selectedModels" @update:selectedModels="updateSelected" :key="model.id"/>
   </div>
   <div class="content-item">
     <label class="content-item-title">SQL</label>
