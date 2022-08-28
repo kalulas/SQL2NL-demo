@@ -7,21 +7,22 @@ export default {
 </script>
 
 <template>
-    <div>
+    <div class="textarea-container">
         <textarea :readonly="readonly" type="text" class="common-input" :placeholder="placeholder" :value="value"
             @input="$emit('update:value', $event.target.value)"></textarea>
-
     </div>
 </template>
 
 <style>
+.textarea-container{
+    min-width:256px;
+    width:750px;
+}
+
 .common-input {
     padding: 10px;
-    width: 756px;
+    width: 100%;
     height: 96px;
     border-width: 1px;
-    /* border-radius: 25px;
-    border-top-right-radius: 0px;
-    border-bottom-right-radius: 0px; */
 }
 </style>
