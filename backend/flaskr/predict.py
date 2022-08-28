@@ -8,4 +8,10 @@ def predict_index():
         return redirect('/../') # to home page
     
     if request.method == 'POST':
-        return "<p>predict function WIP</p>" #TODO
+        selected_models = request.json['selected']
+        input_sql = request.json['sql'].upper()
+        result = ""
+        for model in selected_models:
+            result = result + f"[{model}] {input_sql}\n"
+
+        return result #TODO
