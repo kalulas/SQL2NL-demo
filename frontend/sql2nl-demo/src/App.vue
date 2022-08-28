@@ -30,17 +30,16 @@ export default {
     TextareaExt,
   },
   computed: {
-    selectedModelArray: {
-      get() {
-        return this.selectedModels
-      },
-      set(newValue) {
-        this.selectedModels = newValue
-        console.log("selectedModels is current: " + this.selectedModels)
-      }
-    }
   },
   methods: {
+    getSelected(){
+      return this.selectedModels
+    },
+    updateSelected(selectedArray){
+      this.selectedModels = selectedArray
+      console.log("selectedModels is current: " + this.selectedModels)
+    },
+
     onSubmitResponse(response){
       console.log("response:")
       console.log(response)
@@ -82,8 +81,8 @@ export default {
 
   <div class="content-item">
     <label class="content-item-title">模型</label>
-    <ToggleButton v-model:selectedModels="selectedModelArray" v-for="model in targetModels" 
-    :title="model.name" :selected="model.selected" :id="model.id" :key="model.id"/>
+    <ToggleButton v-for="model in targetModels" 
+    :title="model.name" :selected="model.selected" :id="model.id" :selectedModels="getSelected()" @update:selectedModels="updateSelected" :key="model.id"/>
   </div>
   <div class="content-item">
     <label class="content-item-title">SQL</label>
