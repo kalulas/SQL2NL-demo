@@ -26,8 +26,7 @@ export default {
 <!-- reference: https://www.w3schools.com/howto/howto_css_switch.asp-->
 <div class="toggle-btn">
 <label class="switch">
-  <input v-if="selected" type="checkbox" :value="title" @change="onToggleValueChanged" checked>
-  <input v-else type="checkbox" :value="title" @change="onToggleValueChanged">
+  <input type="checkbox" :checked="selected" :value="title" @change="onToggleValueChanged">
   <span class="slider round"></span>
 </label>
 <label>{{ title }}</label>
