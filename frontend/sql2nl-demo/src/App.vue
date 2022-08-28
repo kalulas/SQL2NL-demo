@@ -1,6 +1,8 @@
 <script setup>
 import Greetings from './components/Greetings.vue'
 import ToggleButton from './components/ToggleButton.vue'
+import TextareaExt from './components/TextareaExt.vue'
+import axios from 'axios'
 </script>
 
 <script>
@@ -8,43 +10,94 @@ export default {
   data() {
     return {
       titleMessage: "sql2nl-demo 站点施工中",
-      targetModels: [{ id: 1, name: "model1" }, { id: 2, name: "model2" }, { id: 3, name: "model3" }, { id: 4, name: "model4" }, { id: 5, name: "model5" }]
+      inputPlaceholder: "在此处输入需要处理的sql语句...",
+      outputPlaceholder: "输出结果会显示在这里...",
+      inputValue: "SELECT T2.first_name ,  T2.last_name FROM candidates AS T1 JOIN people AS T2 ON T1.candidate_id = T2.person_id",
+      outputValue: "",
+      targetModels: [
+        { id: 1, name: "BiLSTM", selected: false }, 
+        { id: 2, name: "Transformer", selected: false }, 
+        { id: 3, name: "Relative-Transformer", selected: false }, 
+        { id: 4, name: "TreeLSTM", selected: false }, 
+        { id: 5, name: "Bart", selected: false }
+      ],
+      selectedModels: [],
     }
   },
   components: {
     Greetings,
-    ToggleButton
+    ToggleButton,
+    TextareaExt,
+  },
+  computed: {
+    selectedModelArray: {
+      get() {
+        return this.selectedModels
+      },
+      set(newValue) {
+        this.selectedModels = newValue
+        console.log("selectedModels is current: " + this.selectedModels)
+      }
+    }
   },
   methods: {
-    onModelToggleValueChanged(modelID) {
-      console.log(`toggle[${modelID}] value is changed`)
+    onSubmitResponse(response){
+      console.log("response:")
+      console.log(response)
+      console.log(response.config.data)
+    },
+    onSubmitError(response){
+      console.log("error response:")
+      console.log(response)
+      console.log(response.config.data)
+    },
+    onSubmitBtnClick() {
+      axios.post('/predict', {
+        sql: this.inputValue,
+        selected: this.selectedModels,
+      })
+      .then(this.onSubmitResponse)
+      .catch(this.onSubmitError)
     }
+  },
+
+  beforeCreate() {
+    let script = document.createElement('script')
+    script.src = 'https://kit.fontawesome.com/fcc237718a.js'
+    script.crossOrigin = 'anonymous'
+    document.getElementsByTagName('head')[0].appendChild(script)
   }
 }
-
 </script>
 
+<!-- <script src="https://kit.fontawesome.com/fcc237718a.js" crossorigin="anonymous"></script> -->
+
 <template>
-  <header>
+  <header style="margin-bottom: 10px;">
     <img alt="under construction" class="logo" src="./assets/drill.gif" width="200" height="150" />
     <div class="wrapper">
       <Greetings :msg="titleMessage" />
     </div>
   </header>
 
-  <!-- <div class="content-item">
-    TODO: input
-  </div> -->
   <div class="content-item">
-    <ToggleButton v-for="model in targetModels" :title="model.name" :id="model.id" :key="model.id"
-      @toggleValueChanged="onModelToggleValueChanged" />
-  </div>
-  <!-- <div class="content-item">
-    TODO: submit btn
+    <label class="content-item-title">模型</label>
+    <ToggleButton v-model:selectedModels="selectedModelArray" v-for="model in targetModels" 
+    :title="model.name" :selected="model.selected" :id="model.id" :key="model.id"/>
   </div>
   <div class="content-item">
-    TODO: outcome
-  </div> -->
+    <label class="content-item-title">SQL</label>
+    <TextareaExt :placeholder="inputPlaceholder" :readonly="false" v-model:value="inputValue"/>
+  </div>
+  <div class="content-item" style="justify-content: right;">
+    <button type="submit" class="common-input-button" @click="onSubmitBtnClick">
+        <i class="fa-regular fa-circle-up fa-xl"> 确认 </i>
+    </button>
+  </div>
+  <div class="content-item">
+    <label class="content-item-title">NL</label>
+    <TextareaExt :placeholder="outputPlaceholder" :readonly="true" v-model:value="outputValue"/>
+  </div>
 </template>
 
 <style scoped>
@@ -60,9 +113,18 @@ header {
 .content-item {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
-  margin-top: 1rem;
-  margin-bottom: 1rem;
+  /* justify-content: center; */
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.content-item-title{
+  display: inline-block;
+  width: 64px;
+}
+
+.common-input-button {
+    padding: 10px;
 }
 
 @media (min-width: 1024px) {

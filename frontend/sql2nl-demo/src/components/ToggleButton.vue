@@ -1,12 +1,21 @@
 
 <script>
 export default {
-    props: ['id', 'title'],
-    emits: ['toggleValueChanged'],
+    props: {'id':Number, 'title':String, 'selected':Boolean, 'selectedModels':Array},
+    emits: ['update:selectedModels'],
     methods: {
         onToggleValueChanged(event){
-            console.log(`${this.title} changed to ${event.target.checked}`)
-            this.$emit('toggleValueChanged', this.id)
+            // console.log(`${this.title} changed to ${event.target.checked}`)
+            var current = this.title
+            if (event.target.checked && !this.selectedModels.includes(current)) {
+              this.selectedModels.push(current)
+            }
+            else if(!event.target.checked && this.selectedModels.includes(current)) {
+              var idx = this.selectedModels.indexOf(current)
+              this.selectedModels.splice(idx, 1)
+            }
+
+            this.$emit('update:selectedModels', this.selectedModels)
         }
     }
 }
@@ -17,7 +26,8 @@ export default {
 <!-- reference: https://www.w3schools.com/howto/howto_css_switch.asp-->
 <div class="toggle-btn">
 <label class="switch">
-  <input type="checkbox" @change="onToggleValueChanged">
+  <input v-if="selected" type="checkbox" :value="title" @change="onToggleValueChanged" checked>
+  <input v-else type="checkbox" :value="title" @change="onToggleValueChanged">
   <span class="slider round"></span>
 </label>
 <label>{{ title }}</label>
