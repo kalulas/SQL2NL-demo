@@ -27,7 +27,7 @@ export default {
 <div class="toggle-btn">
 <label class="switch">
   <input type="checkbox" :checked="selected" :value="title" @change="onToggleValueChanged">
-  <span class="slider round"></span>
+  <!-- <span class="slider round"></span> -->
 </label>
 <label>{{ title }}</label>
 </div>
@@ -35,9 +35,16 @@ export default {
 
 <style scoped>
 .toggle-btn {
-  display: inline-flex;
+  /* display: inline-flex; */
+  display: flex;
+  margin-right: 10px;
 }
 
+.switch {
+  margin-left: 5px;
+  margin-right: 5px;
+}
+/*
 .switch {
   position: relative;
   display: inline-block;
@@ -89,14 +96,15 @@ input:checked + .slider:before {
   -webkit-transform: translateX(26px);
   -ms-transform: translateX(26px);
   transform: translateX(26px);
-}
+}*/
 
 /* Rounded sliders */
+/*
 .slider.round {
   border-radius: 24px;
 }
 
 .slider.round:before {
   border-radius: 50%;
-}
+} */
 </style>

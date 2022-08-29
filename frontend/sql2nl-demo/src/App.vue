@@ -84,16 +84,11 @@ export default {
   </div>
   <div class="content-item">
     <label class="content-item-title">SQL</label>
-    <TextareaExt :placeholder="inputPlaceholder" :readonly="false" v-model:value="inputValue"/>
-  </div>
-  <div class="content-item" style="justify-content: right;">
-    <button type="submit" class="common-input-button" @click="onSubmitBtnClick">
-        <i class="fa-regular fa-circle-up fa-xl"> 确认 </i>
-    </button>
+    <TextareaExt :placeholder="inputPlaceholder" :readonly="false" :showSubmitButton="true" v-model:value="inputValue" @submit="onSubmitBtnClick"/>
   </div>
   <div class="content-item">
     <label class="content-item-title">NL</label>
-    <TextareaExt :placeholder="outputPlaceholder" :readonly="true" v-model:value="outputValue"/>
+    <TextareaExt :placeholder="outputPlaceholder" :readonly="true" :showSubmitButton="false" v-model:value="outputValue"/>
   </div>
 </template>
 
