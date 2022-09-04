@@ -12,7 +12,7 @@ export default {
       titleMessage: "sql2nl-demo 站点施工中",
       inputPlaceholder: "在此处输入需要处理的sql语句...",
       outputPlaceholder: "输出结果会显示在这里...",
-      inputValue: "SELECT T2.first_name ,  T2.last_name FROM candidates AS T1 JOIN people AS T2 ON T1.candidate_id = T2.person_id",
+      inputValue: "SELECT YEAR FROM concert GROUP BY YEAR ORDER BY count(*) DESC LIMIT 1",
       outputValue: "",
       targetModels: [
         { id: 1, name: "BiLSTM", selected: false }, 
