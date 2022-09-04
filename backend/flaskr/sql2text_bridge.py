@@ -49,20 +49,23 @@ def build_dataset(model:str, user_input_json_path:str, checkpoint_args) -> Datas
     return test_dataset
 
 
-def run_sql2text(model:str, user_input_json_path:str):
-    checkpoint_path = get_checkpoint(model)
-    if checkpoint_path == '':
-        return
-    
-    checkpoint_args = torch.load(checkpoint_path)['args']
-    # default args
-    checkpoint_args.data = "spider"
-    checkpoint_args.eval_batch_size = 1
-    test_dataset = build_dataset(model, user_input_json_path, checkpoint_args)
-    if test_dataset is None:
-        return
-    
-    current_app.logger.info(str(test_dataset))
-    print(checkpoint_args.output)
+def run_sql2text(model:str, user_input_json_path:str) -> bool:
+    try:
+        checkpoint_path = get_checkpoint(model)
+        if checkpoint_path == '':
+            return False
 
-    return checkpoint_path
+        checkpoint_args = torch.load(checkpoint_path)['args']
+        # default args
+        checkpoint_args.data = "spider"
+        checkpoint_args.eval_batch_size = 1
+        test_dataset = build_dataset(model, user_input_json_path, checkpoint_args)
+        if test_dataset is None:
+            return False
+
+        current_app.logger.info(str(test_dataset))
+    except Exception as err:
+        current_app.logger.error(err)
+        return False
+    
+    return True
