@@ -8,7 +8,7 @@ bp = Blueprint('predict', __name__, url_prefix="/predict")
 def predict_index():
     # BUG this is not working
     request_ext = RequestID(current_app)
-    current_app.logger.info("RequestID is %s", str(request_ext.id))\
+    current_app.logger.critical("RequestID is %s", request_ext.id)
     
     identifier = utils.generate_request_id(request.remote_addr)
     if request.method == 'GET':
@@ -16,11 +16,12 @@ def predict_index():
     
     if request.method == 'POST':
         selected_models = request.json['selected']
-        input_sql = request.json['sql'].upper()
+        input_sql = request.json['sql']
         current_app.logger.info("request input_sql: '%s'", input_sql)
         current_app.logger.info("request selected_models: %s", selected_models)
         result = ""
         for model in selected_models:
-            result = result + sql2text_bridge.predict(model, input_sql, identifier)
+            prediction, success = sql2text_bridge.predict(model, input_sql, identifier)
+            result = result + prediction
 
-        return result #TODO
+        return result

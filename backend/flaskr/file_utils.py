@@ -27,4 +27,5 @@ def build_input_sql_json(input_sql:str, filename:str) -> str:
         return ""
 
     json.dump(data, fp, indent=4)
+    current_app.logger.info("file %s is created", filepath)
     return filepath
