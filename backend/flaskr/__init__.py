@@ -24,9 +24,9 @@ def create_app(test_config=None):
     except OSError:
         pass
 
-    from . import predict
+    from flaskr import predict
     app.register_blueprint(predict.bp)
-    from . import homepage
+    from flaskr import homepage
     app.register_blueprint(homepage.bp)
 
     return app
