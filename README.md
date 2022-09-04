@@ -37,12 +37,18 @@
 1. python >= 3.8.12
 2. anaconda3 / miniconda3
 3. Flask >= 2.1.1
-4. PyTorch 1.8.1
+
+以下仅在`feature-sql2text-pytorch`分支需要
+
+1. flask-request-id 0.1
+2. PyTorch 1.8.1
+3. CUDA 10.2 
 
 ```bash
 conda create -n [env_name] python=3.8.12
 # activate env
 pip install Flask==2.1.1
+pip install flask-request-id
 ```
 
 #### frontend
@@ -85,8 +91,15 @@ windows下仅支持frontend(vue)项目开发测试，部署需要在linux上执�
 
 #### backend部署
 
+分支选择：如果需要pytorch特性且有sql2text环境，请先切换分支
 ```bash
-# Linux only
+# 项目根目录执行
+$ git checkout feature-sql2text-pytorch
+```
+
+执行脚本启动生成静态资源，启动flask服务器（port:5000）
+
+```bash
 # 项目根目录执行
 $ ./deploy.sh [conda-env-name] [path-to-conda.sh]
 ```
