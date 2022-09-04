@@ -12,14 +12,13 @@ export default {
       titleMessage: "sql2nl-demo 站点施工中",
       inputPlaceholder: "在此处输入需要处理的sql语句...",
       outputPlaceholder: "输出结果会显示在这里...",
-      inputValue: "SELECT YEAR FROM concert GROUP BY YEAR ORDER BY count(*) DESC LIMIT 1",
+      inputValue: "",
       outputValue: "",
       targetModels: [
         { id: 1, name: "BiLSTM", selected: false }, 
         { id: 2, name: "Transformer", selected: false }, 
         { id: 3, name: "Relative-Transformer", selected: false }, 
         { id: 4, name: "TreeLSTM", selected: false }, 
-        { id: 5, name: "Bart", selected: false }
       ],
       selectedModels: [],
     }
@@ -34,9 +33,12 @@ export default {
   methods: {
     updateSelected(selectedArray){
       this.selectedModels = selectedArray
-      console.log("selectedModels is current: " + this.selectedModels)
+      // console.log("selectedModels is current: " + this.selectedModels)
     },
-
+    updateInputValue(inputValue){
+      this.inputValue = inputValue
+      // console.log("inputValue is now: " + this.inputValue)
+    },
     onSubmitResponse(response){
       console.log("response:")
       console.log(response)
@@ -49,6 +51,7 @@ export default {
       console.log(response.config.data)
     },
     onSubmitBtnClick() {
+      this.outputValue = ""
       axios.post('/predict', {
         sql: this.inputValue,
         selected: this.selectedModels,
@@ -84,7 +87,7 @@ export default {
   </div>
   <div class="content-item">
     <label class="content-item-title">SQL</label>
-    <TextareaExt :placeholder="inputPlaceholder" :readonly="false" :showSubmitButton="true" v-model:value="inputValue" @submit="onSubmitBtnClick"/>
+    <TextareaExt :placeholder="inputPlaceholder" :readonly="false" :showSubmitButton="true" :value="inputValue" @update:value="updateInputValue" @submit="onSubmitBtnClick"/>
   </div>
   <div class="content-item">
     <label class="content-item-title">NL</label>
