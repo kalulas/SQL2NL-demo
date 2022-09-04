@@ -2,6 +2,7 @@ venv/
 
 *.pyc
 __pycache__/
+.vscode
 
 instance/
 
@@ -12,5 +13,13 @@ htmlcov/
 dist/
 build/
 *.egg-info/
+
+backend/Checkpoints
+backend/Data
+backend/Dataset
+backend/Model
+backend/SavedData
+backend/Utils
+backend/sql2text-reference
 
 my_deploy.sh
