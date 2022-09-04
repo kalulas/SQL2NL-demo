@@ -13,6 +13,8 @@ from Utils.const import TYPE_NUM
 from Utils.metric import get_metric
 
 MAX_DECODE = 500
+TRAIN_SEQ_DATASET_KEY = "train_seq_dataset"
+TRAIN_TREE_DATASET_KEY = "train_tree_dataset"
 TRAIN_TABLE_FILE_PATH = "Dataset/spider/tables.json"
 SUPPORTED_MODELS = ["BiLSTM", "Relative-Transformer",
                     "Transformer", "TreeLSTM"]
@@ -23,6 +25,7 @@ TRAIN_DATA_FILES = [
 device = torch.device("cuda:0")
 train_seq_dataset: Dataset = None
 train_tree_dataset: Dataset = None
+checkpoint_dict: dict = {}
 
 
 def predict(model: str, input_sql: str, input_identifier: str) -> Tuple[str, bool]:
@@ -44,7 +47,37 @@ def predict(model: str, input_sql: str, input_identifier: str) -> Tuple[str, boo
     return f"[{model}] {prediction}\n", True
 
 
-def get_checkpoint(model: str) -> str:
+def setup_checkpoints(_):
+    global checkpoint_dict
+    
+    for model in SUPPORTED_MODELS:
+        path = get_checkpoint_path(model)
+        print(f"[setup_checkpoints] loading checkpoint {path} for model '{model}'...")
+        checkpoint_dict[model] = torch.load(path)
+        print(f"[setup_checkpoints] checkpoint {path} loaded!")
+
+    print("!!setup_checkpoints finished!!")
+
+
+def setup_models(_):
+    # no app_context in this method, current_app not avialable
+    global train_seq_dataset
+    global train_tree_dataset
+    if train_seq_dataset is None:
+        print(f"[setup_models] generating {TRAIN_SEQ_DATASET_KEY}...")
+        train_seq_dataset = SeqDataset(
+            TRAIN_DATA_FILES, TRAIN_TABLE_FILE_PATH)
+        print(f"[setup_models] {TRAIN_SEQ_DATASET_KEY} generated!")
+    if train_tree_dataset is None:
+        print(f"[setup_models] generating {TRAIN_TREE_DATASET_KEY}...")
+        train_tree_dataset = TreeDataset(
+            TRAIN_DATA_FILES, TRAIN_TABLE_FILE_PATH)
+        print(f"[setup_models] {TRAIN_TREE_DATASET_KEY} generated!")
+
+    print("!!setup_models finished!!")
+
+
+def get_checkpoint_path(model: str) -> str:
     """
     return empty string if model not supported
     """
@@ -65,21 +98,14 @@ def get_checkpoint(model: str) -> str:
 
 
 def get_train_dataset(model: str) -> Dataset:
-    """
-    TODO generate datatset on backend init & use thread?
-    """
-    global train_seq_dataset
-    global train_tree_dataset
     if model in ['Relative-Transformer', 'Transformer', 'BiLSTM']:
         if train_seq_dataset is None:
-            train_seq_dataset = SeqDataset(
-                TRAIN_DATA_FILES, TRAIN_TABLE_FILE_PATH)
+            current_app.logger.error("%s is not setup!", TRAIN_SEQ_DATASET_KEY)
 
         return train_seq_dataset
     elif model == 'TreeLSTM':
         if train_tree_dataset is None:
-            train_tree_dataset = TreeDataset(
-                TRAIN_DATA_FILES, TRAIN_TABLE_FILE_PATH)
+            current_app.logger.error("%s is not setup!", TRAIN_TREE_DATASET_KEY)
 
         return train_tree_dataset
     else:
@@ -196,20 +222,17 @@ def evaluate(model: torch.nn.Module, dataset, vocab, args, model_name) -> List[s
 def run_sql2text(model: str, user_input_json_path: str) -> Tuple[str, bool]:
     result = ""
     try:
-        checkpoint_path = get_checkpoint(model)
-        if checkpoint_path == '':
+        if model not in checkpoint_dict.keys():
+            current_app.logger.error("checkpoint for model %s is not loaded yet", model)
             return result, False
 
-        # TODO cache this
-        checkpoint = torch.load(checkpoint_path)
+        checkpoint = checkpoint_dict[model]
         checkpoint_args = checkpoint['args']
         # build default args
         checkpoint_args.data = "spider"
         checkpoint_args.eval_batch_size = 1
 
-        current_app.logger.info("before build datatset")
         test_dataset = build_dataset(model, user_input_json_path)
-        current_app.logger.info("after build datatset")
         if test_dataset is None:
             return result, False
 
