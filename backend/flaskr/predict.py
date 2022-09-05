@@ -8,7 +8,6 @@ bp.record_once(sql2text_bridge.setup_models)
 
 @bp.route('/', methods=('GET', 'POST'))
 def predict_index():
-    # BUG this is not working
     request_ext = RequestID(current_app)
     current_app.logger.critical("RequestID is %s", request_ext.id)
     

@@ -1,3 +1,4 @@
+import traceback
 from typing import Tuple, List
 from flask import current_app
 from flaskr import file_utils
@@ -250,6 +251,7 @@ def run_sql2text(model: str, user_input_json_path: str) -> Tuple[str, bool]:
 
     except Exception as err:
         current_app.logger.error(err)
+        current_app.logger.error(traceback.format_exc())
         return result, False
 
     return result, True
