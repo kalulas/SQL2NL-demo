@@ -32,5 +32,6 @@ def create_app(test_config=None):
 
     # generate requestID for once
     _ = RequestID(app)
+    app.logger.propagate = False
 
     return app
