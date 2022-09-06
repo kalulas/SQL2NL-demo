@@ -3,8 +3,13 @@ from flaskr import sql2text_bridge, utils
 from flask_request_id import RequestID
 
 bp = Blueprint('predict', __name__, url_prefix="/predict")
-bp.record_once(sql2text_bridge.setup_checkpoints)
-bp.record_once(sql2text_bridge.setup_models)
+# bp.record_once(sql2text_bridge.setup_checkpoints)
+# bp.record_once(sql2text_bridge.setup_models)
+
+@bp.before_app_first_request
+def setup_bridge():
+    sql2text_bridge.setup_checkpoints(True)
+    sql2text_bridge.setup_models(True)
 
 @bp.route('/', methods=('GET', 'POST'))
 def predict_index():

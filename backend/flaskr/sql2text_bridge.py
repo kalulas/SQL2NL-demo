@@ -53,11 +53,14 @@ def setup_checkpoints(_):
     
     for model in SUPPORTED_MODELS:
         path = get_checkpoint_path(model)
-        print(f"[setup_checkpoints] loading checkpoint {path} for model '{model}'...")
+        current_app.logger.info(f"loading checkpoint {path} for model '{model}'...")
+        # print(f"[setup_checkpoints] loading checkpoint {path} for model '{model}'...")
         checkpoint_dict[model] = torch.load(path)
-        print(f"[setup_checkpoints] checkpoint {path} loaded!")
+        # print(f"[setup_checkpoints] checkpoint {path} loaded!")
+        current_app.logger.info(f"checkpoint {path} loaded!")
 
-    print("!!setup_checkpoints finished!!")
+    # print("!!setup_checkpoints finished!!")
+    current_app.logger.info("!!setup_checkpoints finished!!")
 
 
 def setup_models(_):
@@ -65,17 +68,22 @@ def setup_models(_):
     global train_seq_dataset
     global train_tree_dataset
     if train_seq_dataset is None:
-        print(f"[setup_models] generating {TRAIN_SEQ_DATASET_KEY}...")
+        # print(f"[setup_models] generating {TRAIN_SEQ_DATASET_KEY}...")
+        current_app.logger.info(f"generating {TRAIN_SEQ_DATASET_KEY}...")
         train_seq_dataset = SeqDataset(
             TRAIN_DATA_FILES, TRAIN_TABLE_FILE_PATH)
-        print(f"[setup_models] {TRAIN_SEQ_DATASET_KEY} generated!")
+        # print(f"[setup_models] {TRAIN_SEQ_DATASET_KEY} generated!")
+        current_app.logger.info(f"{TRAIN_SEQ_DATASET_KEY} generated!")
     if train_tree_dataset is None:
-        print(f"[setup_models] generating {TRAIN_TREE_DATASET_KEY}...")
+        # print(f"[setup_models] generating {TRAIN_TREE_DATASET_KEY}...")
+        current_app.logger.info(f"generating {TRAIN_TREE_DATASET_KEY}...")
         train_tree_dataset = TreeDataset(
             TRAIN_DATA_FILES, TRAIN_TABLE_FILE_PATH)
-        print(f"[setup_models] {TRAIN_TREE_DATASET_KEY} generated!")
+        # print(f"[setup_models] {TRAIN_TREE_DATASET_KEY} generated!")
+        current_app.logger.info(f"{TRAIN_TREE_DATASET_KEY} generated!")
 
-    print("!!setup_models finished!!")
+    # print("!!setup_models finished!!")
+    current_app.logger.info("!!setup_models finished!!")
 
 
 def get_checkpoint_path(model: str) -> str:
