@@ -10,6 +10,7 @@ import axios from 'axios'
 export default {
   data() {
     return {
+      requestProcessing: false,
       titleMessage: "SQL2NL模型的组合泛化能力评估系统",
       inputPlaceholder: "在此处输入需要处理的sql语句...",
       goldInputPlaceholder: "在此处输入参考答案...（可选，填写后输出评分）",
@@ -63,11 +64,13 @@ export default {
       console.log(response)
       console.log(response.config.data)
       this.outputValue = response.data
+      this.requestProcessing = false
     },
     onSubmitError(response){
       console.log("error response:")
       console.log(response)
       console.log(response.config.data)
+      this.requestProcessing = false
     },
     onSubmitBtnClick() {
       this.outputValue = ""
@@ -79,6 +82,7 @@ export default {
       })
       .then(this.onSubmitResponse)
       .catch(this.onSubmitError)
+      this.requestProcessing = true
     }
   },
 
@@ -117,6 +121,9 @@ export default {
   <div class="content-item">
     <label class="content-item-title">GOLD-NL</label>
     <TextareaExt :placeholder="goldInputPlaceholder" :readonly="false" :showSubmitButton="true" :value="goldInputValue" :overrideHeight=60 @update:value="updateGoldInputValue" @submit="onSubmitBtnClick"/>
+  </div>
+  <div v-show="requestProcessing" class="content-item" style="justify-content: center;">
+    <img alt="now loading..." src="./assets/Pulse-1s-200px.gif"/>
   </div>
   <div class="content-item">
     <label class="content-item-title">NL</label>
