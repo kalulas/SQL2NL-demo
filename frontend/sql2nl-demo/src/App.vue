@@ -2,6 +2,7 @@
 import Greetings from './components/Greetings.vue'
 import ToggleButton from './components/ToggleButton.vue'
 import TextareaExt from './components/TextareaExt.vue'
+import CascadingDropdown from './components/CascadingDropdown.vue'
 import axios from 'axios'
 </script>
 
@@ -11,16 +12,23 @@ export default {
     return {
       titleMessage: "SQL2NL模型的组合泛化能力评估系统",
       inputPlaceholder: "在此处输入需要处理的sql语句...",
-      goldInputPlaceholder: "在此处输入参考答案...",
+      goldInputPlaceholder: "在此处输入参考答案...（可选，填写后输出评分）",
       outputPlaceholder: "输出结果会显示在这里...",
       inputValue: "",
       outputValue: "",
       goldInputValue: "",
-      targetModels: [
+      selectedDatabase: "",
+      targetModels: [ // TODO get all models from server
         { id: 1, name: "Transformer", selected: false }, 
         { id: 2, name: "Relative-Transformer", selected: false }, 
         { id: 3, name: "BiLSTM", selected: false }, 
         { id: 4, name: "TreeLSTM", selected: false }, 
+      ],
+      db_ids: [ // TODO get all db_ids from server
+        "db_id:0",
+        "db_id:1",
+        "db_id:2",
+        "db_id:3",
       ],
       selectedModels: [],
     }
@@ -29,6 +37,7 @@ export default {
     Greetings,
     ToggleButton,
     TextareaExt,
+    CascadingDropdown,
   },
   computed: {
   },
@@ -44,6 +53,10 @@ export default {
     updateGoldInputValue(inputValue){
       this.goldInputValue = inputValue
       // console.log("goldInputValue is now: " + this.goldInputValue)
+    },
+    onDatabaseSelected(database){
+      this.selectedDatabase = database
+      console.log("current selected database: " + this.selectedDatabase)
     },
     onSubmitResponse(response){
       console.log("response:")
@@ -61,6 +74,7 @@ export default {
       axios.post('/predict', {
         sql: this.inputValue,
         gold_nl: this.goldInputValue,
+        db_id: this.selectedDatabase,
         selected: this.selectedModels,
       })
       .then(this.onSubmitResponse)
@@ -91,6 +105,10 @@ export default {
     <label class="content-item-title">模型</label>
     <ToggleButton v-for="model in targetModels" 
     :title="model.name" :selected="model.selected" :id="model.id" :selectedModels="selectedModels" @update:selectedModels="updateSelected" :key="model.id"/>
+  </div>
+  <div class="content-item">
+    <label class="content-item-title">db_id</label>
+    <CascadingDropdown :dropdownItems="db_ids" @dropdownItemSelected="onDatabaseSelected"/>
   </div>
   <div class="content-item">
     <label class="content-item-title">SQL</label>
