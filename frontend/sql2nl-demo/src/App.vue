@@ -9,15 +9,17 @@ import axios from 'axios'
 export default {
   data() {
     return {
-      titleMessage: "sql2nl-demo 站点施工中",
+      titleMessage: "SQL2NL模型的组合泛化能力评估系统",
       inputPlaceholder: "在此处输入需要处理的sql语句...",
+      goldInputPlaceholder: "在此处输入参考答案...",
       outputPlaceholder: "输出结果会显示在这里...",
       inputValue: "",
       outputValue: "",
+      goldInputValue: "",
       targetModels: [
-        { id: 1, name: "BiLSTM", selected: false }, 
-        { id: 2, name: "Transformer", selected: false }, 
-        { id: 3, name: "Relative-Transformer", selected: false }, 
+        { id: 1, name: "Transformer", selected: false }, 
+        { id: 2, name: "Relative-Transformer", selected: false }, 
+        { id: 3, name: "BiLSTM", selected: false }, 
         { id: 4, name: "TreeLSTM", selected: false }, 
       ],
       selectedModels: [],
@@ -38,6 +40,10 @@ export default {
     updateInputValue(inputValue){
       this.inputValue = inputValue
       // console.log("inputValue is now: " + this.inputValue)
+    },
+    updateGoldInputValue(inputValue){
+      this.goldInputValue = inputValue
+      // console.log("goldInputValue is now: " + this.goldInputValue)
     },
     onSubmitResponse(response){
       console.log("response:")
@@ -73,8 +79,8 @@ export default {
 <!-- <script src="https://kit.fontawesome.com/fcc237718a.js" crossorigin="anonymous"></script> -->
 
 <template>
-  <header style="margin-bottom: 10px;">
-    <img alt="under construction" class="logo" src="./assets/drill.gif" width="200" height="150" />
+  <header class="title">
+    <!-- <img alt="under construction" class="logo" src="./assets/drill.gif" width="200" height="150" /> -->
     <div class="wrapper">
       <Greetings :msg="titleMessage" />
     </div>
@@ -87,17 +93,28 @@ export default {
   </div>
   <div class="content-item">
     <label class="content-item-title">SQL</label>
-    <TextareaExt :placeholder="inputPlaceholder" :readonly="false" :showSubmitButton="true" :value="inputValue" @update:value="updateInputValue" @submit="onSubmitBtnClick"/>
+    <TextareaExt :placeholder="inputPlaceholder" :readonly="false" :showSubmitButton="false" :value="inputValue" :overrideHeight=60 @update:value="updateInputValue"/>
+  </div>
+  <div class="content-item">
+    <label class="content-item-title">GOLD-NL</label>
+    <TextareaExt :placeholder="goldInputPlaceholder" :readonly="false" :showSubmitButton="true" :value="goldInputValue" :overrideHeight=60 @update:value="updateGoldInputValue" @submit="onSubmitBtnClick"/>
   </div>
   <div class="content-item">
     <label class="content-item-title">NL</label>
-    <TextareaExt :placeholder="outputPlaceholder" :readonly="true" :showSubmitButton="false" v-model:value="outputValue"/>
+    <TextareaExt :placeholder="outputPlaceholder" :readonly="true" :showSubmitButton="false" :overrideHeight=320 v-model:value="outputValue"/>
   </div>
 </template>
 
 <style scoped>
 header {
   line-height: 1.5;
+}
+
+.title{
+  display: flex;
+  justify-content: center;
+  margin-bottom: 40px;
+  margin-top: 60px;
 }
 
 .logo {
@@ -116,6 +133,7 @@ header {
 .content-item-title{
   display: inline-block;
   width: 64px;
+  margin-right: 20px;
 }
 
 .common-input-button {
@@ -126,7 +144,7 @@ header {
   header {
     display: flex;
     place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
+    /* padding-right: calc(var(--section-gap) / 2); */
   }
 
   .logo {
