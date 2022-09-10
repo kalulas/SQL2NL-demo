@@ -74,7 +74,7 @@ export default {
     },
     onSubmitBtnClick() {
       this.outputValue = ""
-      axios.post('/predict', {
+      axios.post('/predict/', {
         sql: this.inputValue,
         gold_nl: this.goldInputValue,
         db_id: this.selectedDatabase,
