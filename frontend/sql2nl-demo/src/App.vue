@@ -56,7 +56,7 @@ export default {
     },
     onDatabaseSelected(database){
       this.selectedDatabase = database
-      console.log("current selected database: " + this.selectedDatabase)
+      // console.log("current selected database: " + this.selectedDatabase)
     },
     onSubmitResponse(response){
       console.log("response:")
@@ -82,12 +82,12 @@ export default {
     }
   },
 
-  beforeCreate() {
-    let script = document.createElement('script')
-    script.src = 'https://kit.fontawesome.com/fcc237718a.js'
-    script.crossOrigin = 'anonymous'
-    document.getElementsByTagName('head')[0].appendChild(script)
-  }
+  // beforeCreate() {
+  //   let script = document.createElement('script')
+  //   script.src = 'https://kit.fontawesome.com/fcc237718a.js'
+  //   script.crossOrigin = 'anonymous'
+  //   document.getElementsByTagName('head')[0].appendChild(script)
+  // }
 }
 </script>
 
