@@ -60,6 +60,7 @@ export default {
       this.outputValue = ""
       axios.post('/predict', {
         sql: this.inputValue,
+        gold_nl: this.goldInputValue,
         selected: this.selectedModels,
       })
       .then(this.onSubmitResponse)
