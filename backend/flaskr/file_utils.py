@@ -1,5 +1,6 @@
 import json
 from flask import current_app
+from typing import List
 
 input_sql_json_dir = "SavedData/sql2text/"
 
@@ -29,3 +30,17 @@ def build_input_sql_json(input_sql:str, filename:str) -> str:
     json.dump(data, fp, indent=4)
     current_app.logger.info("file %s is created", filepath)
     return filepath
+
+
+def get_databases_from_file(file_path:str) -> List[str]:
+    result = []
+    with open(file_path, 'r') as fp:
+        db_list = json.load(fp)
+        for db_config in db_list:
+            if "db_id" not in db_config.keys():
+                current_app.logger.error(f" 'db_id' not found in {file_path}")
+                continue
+
+            result.append(db_config["db_id"])
+
+    return result

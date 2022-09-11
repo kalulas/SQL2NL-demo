@@ -10,7 +10,7 @@ import axios from 'axios'
 export default {
   data() {
     return {
-      requestProcessing: false,
+      proccessingRequestCount: 0,
       titleMessage: "SQL2NL模型的组合泛化能力评估系统",
       inputPlaceholder: "在此处输入需要处理的sql语句...",
       goldInputPlaceholder: "在此处输入参考答案...（可选，填写后输出评分）",
@@ -20,10 +20,10 @@ export default {
       goldInputValue: "",
       selectedDatabase: "",
       targetModels: [ // TODO get all models from server
-        { id: 1, name: "Transformer", selected: false }, 
-        { id: 2, name: "Relative-Transformer", selected: false }, 
-        { id: 3, name: "BiLSTM", selected: false }, 
-        { id: 4, name: "TreeLSTM", selected: false }, 
+        // { id: 1, name: "Transformer", selected: false }, 
+        // { id: 2, name: "Relative-Transformer", selected: false }, 
+        // { id: 3, name: "BiLSTM", selected: false }, 
+        // { id: 4, name: "TreeLSTM", selected: false }, 
       ],
       db_ids: [ // TODO get all db_ids from server
         "db_id:0",
@@ -41,6 +41,9 @@ export default {
     CascadingDropdown,
   },
   computed: {
+    isRequestProcessing(){
+      return this.proccessingRequestCount == 0
+    }
   },
   methods: {
     updateSelected(selectedArray){
@@ -59,20 +62,18 @@ export default {
       this.selectedDatabase = database
       // console.log("current selected database: " + this.selectedDatabase)
     },
-    onSubmitResponse(response){
-      console.log("response:")
+
+    onRequestPredictResponse(response){
+      this.proccessingRequestCount -= 1
       console.log(response)
-      console.log(response.config.data)
       this.outputValue = response.data
-      this.requestProcessing = false
     },
-    onSubmitError(response){
+    onRequestFailed(response){
+      this.proccessingRequestCount -= 1
       console.log("error response:")
       console.log(response)
-      console.log(response.config.data)
-      this.requestProcessing = false
     },
-    onSubmitBtnClick() {
+    requestPredict() {
       this.outputValue = ""
       axios.post('/predict/', {
         sql: this.inputValue,
@@ -80,12 +81,43 @@ export default {
         db_id: this.selectedDatabase,
         selected: this.selectedModels,
       })
-      .then(this.onSubmitResponse)
-      .catch(this.onSubmitError)
-      this.requestProcessing = true
-    }
+      .then(this.onRequestPredictResponse)
+      .catch(this.onRequestFailed)
+      this.proccessingRequestCount += 1
+    },
+
+    onRequsetAvailableModelsResponse(response){
+      this.proccessingRequestCount -= 1
+      console.log(response)
+      this.targetModels = new Array(response.data.length);
+      for (let index = 0; index < response.data.length; index++) {
+        const element = response.data[index];
+        this.targetModels[index] = { "id": index + 1, "name": element, "selected": false }
+      }
+
+      console.log(this.targetModels.length + " models received")
+    },
+    requestAvailableModels(){
+      axios.post('/predict/models/').then(this.onRequsetAvailableModelsResponse).catch(this.onRequestFailed)
+      this.proccessingRequestCount += 1
+    },
+
+    onRequestAvailableDatabasesResponse(response){
+      this.proccessingRequestCount -= 1
+      console.log(response)
+      this.db_ids = response.data
+      console.log(this.db_ids.length + " databases received")
+    },
+    requestAvailableDatabases(){
+      axios.post('/predict/databases/').then(this.onRequestAvailableDatabasesResponse).catch(this.onRequestFailed)
+      this.proccessingRequestCount += 1
+    },
   },
 
+  mounted() {
+    this.requestAvailableModels()
+    this.requestAvailableDatabases()
+  }
   // beforeCreate() {
   //   let script = document.createElement('script')
   //   script.src = 'https://kit.fontawesome.com/fcc237718a.js'
@@ -120,9 +152,9 @@ export default {
   </div>
   <div class="content-item">
     <label class="content-item-title">GOLD-NL</label>
-    <TextareaExt :placeholder="goldInputPlaceholder" :readonly="false" :showSubmitButton="true" :value="goldInputValue" :overrideHeight=60 @update:value="updateGoldInputValue" @submit="onSubmitBtnClick"/>
+    <TextareaExt :placeholder="goldInputPlaceholder" :readonly="false" :showSubmitButton="true" :value="goldInputValue" :overrideHeight=60 @update:value="updateGoldInputValue" @submit="requestPredict"/>
   </div>
-  <div v-show="requestProcessing" class="content-item" style="justify-content: center;">
+  <div v-show="!isRequestProcessing" class="content-item" style="justify-content: center;">
     <img alt="now loading..." src="./assets/Pulse-1s-200px.gif"/>
   </div>
   <div class="content-item">
