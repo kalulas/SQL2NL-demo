@@ -39,13 +39,13 @@ export default {
     getPredictionStrFromObject(resultObject){
       if (resultObject.success) {
         if (resultObject.hasScore) {
-          return `[${resultObject.modelName}] ${resultObject.result} (score:${resultObject.score})`
+          return `[${resultObject.modelName}] ${resultObject.result}\n (BLEU:${resultObject.score})`
         }
 
         return `[${resultObject.modelName}] ${resultObject.result}`
       }
 
-      return `[${resultObject.modelName}] 解析失败，错误原因：${resultObject.failedReason}`
+      return `[${resultObject.modelName}] 解析失败！\n (reason:${resultObject.failedReason})`
     },
 
     updateSelected(selectedArray){
@@ -70,7 +70,7 @@ export default {
       console.log(response)
       var output = ""
       response.data.forEach(element => {
-        output += this.getPredictionStrFromObject(element) + '\n'
+        output += this.getPredictionStrFromObject(element) + '\n\n'
       });
 
       this.outputValue = output
