@@ -11,7 +11,7 @@
 a,
 .title-text {
   text-decoration: none;
-  color: rgb(255, 179, 0);
+  /* color: rgb(255, 179, 0); */
   transition: 0.4s;
 }
 
@@ -25,6 +25,7 @@ a,
   body {
     display: flex;
     place-items: center;
+    align-items: flex-start;
   }
 
   #app {
