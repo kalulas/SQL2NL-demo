@@ -32,7 +32,7 @@ export default {
   },
   computed: {
     isRequestProcessing(){
-      return this.proccessingRequestCount == 0
+      return this.proccessingRequestCount != 0
     }
   },
   methods: {
@@ -160,9 +160,9 @@ export default {
   </div>
   <div class="content-item">
     <label class="content-item-title">GOLD-NL</label>
-    <TextareaExt :placeholder="goldInputPlaceholder" :readonly="false" :showSubmitButton="true" :value="goldInputValue" :overrideHeight=60 @update:value="updateGoldInputValue" @submit="requestPredict"/>
+    <TextareaExt :placeholder="goldInputPlaceholder" :readonly="false" :showSubmitButton="true" :disableSubmitButton="isRequestProcessing" :value="goldInputValue" :overrideHeight=60 @update:value="updateGoldInputValue" @submit="requestPredict"/>
   </div>
-  <div v-show="!isRequestProcessing" class="content-item" style="justify-content: center;">
+  <div v-show="isRequestProcessing" class="content-item" style="justify-content: center;">
     <img alt="now loading..." src="./assets/Pulse-1s-200px.gif"/>
   </div>
   <div class="content-item">

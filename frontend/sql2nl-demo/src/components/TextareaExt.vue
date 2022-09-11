@@ -1,6 +1,6 @@
 <script>
 export default {
-    props: { 'placeholder': String, 'value': String, 'readonly': Boolean, 'showSubmitButton': Boolean, 'overrideHeight': Number },
+    props: { 'placeholder': String, 'value': String, 'readonly': Boolean, 'showSubmitButton': Boolean, 'disableSubmitButton': Boolean, 'overrideHeight': Number },
     emits: ['update:value', 'submit'],
 }
 
@@ -11,7 +11,7 @@ export default {
         <textarea :readonly="readonly" type="text" class="common-input" :placeholder="placeholder" :value="value" :style="{ height: overrideHeight + 'px' }"
             @input="$emit('update:value', $event.target.value)"></textarea>
         <div v-if="showSubmitButton" class="common-input-button-container">
-            <button type="submit" class="common-input-button" @click="$emit('submit')">
+            <button type="submit" class="common-input-button" :disabled="disableSubmitButton" @click="$emit('submit')">
                 <!-- <i class="fa-regular fa-circle-up fa-xl"> 确认 </i> -->
                 Submit
             </button>
