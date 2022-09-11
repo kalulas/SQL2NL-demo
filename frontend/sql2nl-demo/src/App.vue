@@ -19,18 +19,8 @@ export default {
       outputValue: "",
       goldInputValue: "",
       selectedDatabase: "",
-      targetModels: [ // TODO get all models from server
-        // { id: 1, name: "Transformer", selected: false }, 
-        // { id: 2, name: "Relative-Transformer", selected: false }, 
-        // { id: 3, name: "BiLSTM", selected: false }, 
-        // { id: 4, name: "TreeLSTM", selected: false }, 
-      ],
-      db_ids: [ // TODO get all db_ids from server
-        "db_id:0",
-        "db_id:1",
-        "db_id:2",
-        "db_id:3",
-      ],
+      targetModels: [],
+      db_ids: [],
       selectedModels: [],
     }
   },
