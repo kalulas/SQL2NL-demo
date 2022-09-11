@@ -219,7 +219,7 @@ def evaluate(model: torch.nn.Module, dataset, vocab, args, model_name) -> List[s
         preds = torch.cat(preds, dim=1)
         all_predictions += preds.tolist()
 
-    _, result_predictions, _ = get_metric(all_predictions, dataset.origin_questions, vocab,
+    _, scores, result_predictions, _ = get_metric(all_predictions, dataset.origin_questions, vocab,
                                           True, dataset.val_map_list, dataset.idx2tok_map_list)
 
     if len(result_predictions) > 0:
