@@ -36,6 +36,18 @@ export default {
     }
   },
   methods: {
+    getPredictionStrFromObject(resultObject){
+      if (resultObject.success) {
+        if (resultObject.hasScore) {
+          return `[${resultObject.modelName}] ${resultObject.result} (score:${resultObject.score})`
+        }
+
+        return `[${resultObject.modelName}] ${resultObject.result}`
+      }
+
+      return `[${resultObject.modelName}] 解析失败，错误原因：${resultObject.failedReason}`
+    },
+
     updateSelected(selectedArray){
       this.selectedModels = selectedArray
       // console.log("selectedModels is current: " + this.selectedModels)
@@ -56,7 +68,12 @@ export default {
     onRequestPredictResponse(response){
       this.proccessingRequestCount -= 1
       console.log(response)
-      this.outputValue = response.data
+      var output = ""
+      response.data.forEach(element => {
+        output += this.getPredictionStrFromObject(element) + '\n'
+      });
+
+      this.outputValue = output
     },
     onRequestFailed(response){
       this.proccessingRequestCount -= 1
@@ -96,6 +113,7 @@ export default {
       this.proccessingRequestCount -= 1
       console.log(response)
       this.db_ids = response.data
+      this.db_ids.sort()
       console.log(this.db_ids.length + " databases received")
     },
     requestAvailableDatabases(){

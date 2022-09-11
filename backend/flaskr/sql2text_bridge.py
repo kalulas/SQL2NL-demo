@@ -2,6 +2,7 @@ import traceback
 from typing import Tuple, List
 from flask import current_app
 from flaskr import file_utils
+from flaskr.evaluation_result import EvaluationResult
 
 import torch
 from torch.utils.data import Dataset
@@ -29,23 +30,35 @@ train_tree_dataset: Dataset = None
 checkpoint_dict: dict = {}
 
 
-def predict(model: str, input_sql: str, input_identifier: str) -> Tuple[str, bool]:
-    error_msg = f"[{model}] processing {input_sql} failed!\n"
+def predict(model:str, db_id:str, gold_nl:str, input_sql:str, input_identifier:str) -> EvaluationResult:
+    result = EvaluationResult()
+    result.modelName = model
+    result.original = input_sql
+    # score is considered only gold_nl is passed in
+    result.hasScore = gold_nl != None and gold_nl != ""
+
     if model not in SUPPORTED_MODELS:
-        return error_msg, False
+        error_msg = f"model '{model}' is not in supported models {SUPPORTED_MODELS}!"
+        current_app.logger.error(error_msg)
+        result.failedReason = error_msg
+        return result
 
     # current_app.logger.info(f"you are on bridge, torch version:{torch.__version__}")
     input_identifier = f"{input_identifier}@{model}"
     jsonTargetPath = file_utils.build_input_sql_json(
-        input_sql, input_identifier)
+        db_id, gold_nl, input_sql, input_identifier)
     if jsonTargetPath == "":
-        return error_msg, False
+        error_msg = f"build json file for model '{model}' input_sql '{input_sql}' failed!"
+        current_app.logger.error(error_msg)
+        result.failedReason = error_msg
+        return result
 
-    prediction, success = run_sql2text(model, jsonTargetPath)
-    if not success:
-        return error_msg, False
+    run_sql2text(model, jsonTargetPath, result)
+    return result
 
-    return f"[{model}] {prediction}\n", True
+
+def is_ready():
+    return len(checkpoint_dict) != 0 and train_seq_dataset != None and train_tree_dataset != None
 
 
 def setup_checkpoints(_):
@@ -180,9 +193,9 @@ def build_model(args, vocab) -> torch.nn.Module:
     return None
 
 
-def evaluate(model: torch.nn.Module, dataset, vocab, args, model_name) -> List[str]:
+def evaluate(model: torch.nn.Module, dataset, vocab, args, model_name) -> Tuple[str, float]:
     if model_name not in SUPPORTED_MODELS:
-        return ""
+        return "", 0
 
     model.eval()
     dataloader = DataLoader(dataset, args.eval_batch_size)
@@ -205,7 +218,7 @@ def evaluate(model: torch.nn.Module, dataset, vocab, args, model_name) -> List[s
                 nodes, types, node_order, adjacency_list, edge_order)
         else:
             current_app.logger.error("not supported model %s", model_name)
-            return ""
+            return "", 0
 
         inputs = questions[:, 0].view(-1, 1)
         for _ in range(MAX_DECODE):
@@ -222,18 +235,18 @@ def evaluate(model: torch.nn.Module, dataset, vocab, args, model_name) -> List[s
     _, scores, result_predictions, _ = get_metric(all_predictions, dataset.origin_questions, vocab,
                                           True, dataset.val_map_list, dataset.idx2tok_map_list)
 
-    if len(result_predictions) > 0:
-        return result_predictions[0]
+    prediction = result_predictions[0] if len(result_predictions) > 0 else ""
+    score = scores[0] if len(scores) > 0 else 0
+    return prediction, score
 
-    return ""
 
-
-def run_sql2text(model: str, user_input_json_path: str) -> Tuple[str, bool]:
-    result = ""
+def run_sql2text(model: str, user_input_json_path: str, result:EvaluationResult):
     try:
         if model not in checkpoint_dict.keys():
-            current_app.logger.error("checkpoint for model %s is not loaded yet", model)
-            return result, False
+            reason = f"checkpoint for model {model} is not loaded yet"
+            current_app.logger.error(reason)
+            result.failedReason = reason
+            return
 
         checkpoint = checkpoint_dict[model]
         checkpoint_args = checkpoint['args']
@@ -243,23 +256,32 @@ def run_sql2text(model: str, user_input_json_path: str) -> Tuple[str, bool]:
 
         test_dataset = build_dataset(model, user_input_json_path)
         if test_dataset is None:
-            return result, False
+            reason = f"build dataset for {model} failed"
+            current_app.logger.error(reason)
+            result.failedReason = reason
+            return
 
         model = build_model(checkpoint_args, test_dataset.vocab)
         if model is None:
-            return result, False
+            reason = f"build model for {model} failed"
+            current_app.logger.error(reason)
+            result.failedReason = reason
+            return
 
         model.to(device)
         model.load_state_dict(checkpoint['model'])
         current_app.logger.info(
             "%s is ready, start evaluate...", checkpoint_args.model)
-        prediction = evaluate(
+        prediction, score = evaluate(
             model, test_dataset, test_dataset.vocab, checkpoint_args, checkpoint_args.model)
-        result = prediction
+        result.result = prediction
+        result.score = score
+        result.success = True
 
     except Exception as err:
         current_app.logger.error(err)
         current_app.logger.error(traceback.format_exc())
-        return result, False
+        result.failedReason = str(err)
+        return
 
-    return result, True
+    return

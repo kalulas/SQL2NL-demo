@@ -6,10 +6,15 @@ bp = Blueprint('predict', __name__, url_prefix="/predict")
 # bp.record_once(sql2text_bridge.setup_checkpoints)
 # bp.record_once(sql2text_bridge.setup_models)
 
-@bp.before_app_first_request
-def setup_bridge():
+def setup_bridge_if_not_ready():
+    if sql2text_bridge.is_ready():
+        return
+    
+    current_app.logger.info("bridge not ready, setup checkpoints and models...")
     sql2text_bridge.setup_checkpoints(True)
     sql2text_bridge.setup_models(True)
+    current_app.logger.info("bridge is now ready!")
+
 
 @bp.route('/', methods=('GET', 'POST'))
 def predict_index():
@@ -23,14 +28,20 @@ def predict_index():
     if request.method == 'POST':
         selected_models = request.json['selected']
         input_sql = request.json['sql']
-        current_app.logger.info("request input_sql: '%s'", input_sql)
-        current_app.logger.info("request selected_models: %s", selected_models)
-        result = ""
-        for model in selected_models:
-            prediction, success = sql2text_bridge.predict(model, input_sql, identifier)
-            result = result + prediction
+        gold_nl = request.json['gold_nl']
+        db_id = request.json['db_id']
+        current_app.logger.info("request info: '%s'", request.json)
+        # current_app.logger.info("request selected_models: %s", selected_models)
 
-        return result
+        setup_bridge_if_not_ready()
+
+        results = []
+        for model in selected_models:
+            result = sql2text_bridge.predict(model, db_id, gold_nl, input_sql, identifier)
+            results.append(result.toDict())
+            # result = result + prediction
+
+        return jsonify(results)
 
 @bp.route('/models/', methods=['POST'])
 def process_models_request():

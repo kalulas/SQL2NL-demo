@@ -4,24 +4,24 @@ from typing import List
 
 input_sql_json_dir = "SavedData/sql2text/"
 
-def get_input_sql_element(input_sql:str) -> dict:
+def get_input_sql_element(db_id:str, gold_nl:str, input_sql:str) -> dict:
     return {
-        "db_id": "concert_singer",
+        "db_id": db_id,
         "orig_query": input_sql,
         "keywords": [
             "all"
         ],
         "query": "",
-        "question": ""
+        "question": gold_nl
     }
 
-def build_input_sql_json(input_sql:str, filename:str) -> str:
+def build_input_sql_json(db_id:str, gold_nl:str, input_sql:str, filename:str) -> str:
     """
     return relative filepath if file successfully created, empty string if failed
     """
     filepath = input_sql_json_dir + filename + ".json"
     data = []
-    data.append(get_input_sql_element(input_sql))
+    data.append(get_input_sql_element(db_id, gold_nl, input_sql))
     fp = open(filepath, 'w')
     if fp is None:
         current_app.logger.error(f"open {filepath} failed, exit")
