@@ -30,12 +30,12 @@ train_tree_dataset: Dataset = None
 checkpoint_dict: dict = {}
 
 
-def predict(model:str, db_id:str, gold_nl:str, input_sql:str, input_identifier:str) -> EvaluationResult:
+def predict(model:str, db_id:str, gold_nl_array:str, input_sql:str, input_identifier:str) -> EvaluationResult:
     result = EvaluationResult()
     result.modelName = model
     result.original = input_sql
     # score is considered only gold_nl is passed in
-    result.hasScore = gold_nl != None and gold_nl != ""
+    result.hasScore = gold_nl_array != None and gold_nl_array != ""
 
     if model not in SUPPORTED_MODELS:
         error_msg = f"model '{model}' is not in supported models {SUPPORTED_MODELS}!"
@@ -46,7 +46,7 @@ def predict(model:str, db_id:str, gold_nl:str, input_sql:str, input_identifier:s
     # current_app.logger.info(f"you are on bridge, torch version:{torch.__version__}")
     input_identifier = f"{input_identifier}@{model}"
     jsonTargetPath = file_utils.build_input_sql_json(
-        db_id, gold_nl, input_sql, input_identifier)
+        db_id, gold_nl_array, input_sql, input_identifier)
     if jsonTargetPath == "":
         error_msg = f"build json file for model '{model}' input_sql '{input_sql}' failed!"
         current_app.logger.error(error_msg)

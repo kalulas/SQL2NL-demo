@@ -15,13 +15,17 @@ def get_input_sql_element(db_id:str, gold_nl:str, input_sql:str) -> dict:
         "question": gold_nl
     }
 
-def build_input_sql_json(db_id:str, gold_nl:str, input_sql:str, filename:str) -> str:
+def build_input_sql_json(db_id:str, gold_nl_array_str:str, input_sql:str, filename:str) -> str:
     """
     return relative filepath if file successfully created, empty string if failed
     """
     filepath = input_sql_json_dir + filename + ".json"
     data = []
-    data.append(get_input_sql_element(db_id, gold_nl, input_sql))
+    gold_nl_array = gold_nl_array_str.split('\n')
+    for gold_nl in gold_nl_array:
+        data.append(get_input_sql_element(db_id, gold_nl, input_sql))
+    
+    current_app.logger.info(f"testset with {len(data)} questions is created")
     fp = open(filepath, 'w')
     if fp is None:
         current_app.logger.error(f"open {filepath} failed, exit")

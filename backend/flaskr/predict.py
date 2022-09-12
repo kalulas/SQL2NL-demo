@@ -28,7 +28,8 @@ def predict_index():
     if request.method == 'POST':
         selected_models = request.json['selected']
         input_sql = request.json['sql']
-        gold_nl = request.json['gold_nl']
+        # this is seperated by '\n'
+        gold_nl_array = request.json['gold_nl']
         db_id = request.json['db_id']
         current_app.logger.info("request info: '%s'", request.json)
         # current_app.logger.info("request selected_models: %s", selected_models)
@@ -37,7 +38,7 @@ def predict_index():
 
         results = []
         for model in selected_models:
-            result = sql2text_bridge.predict(model, db_id, gold_nl, input_sql, identifier)
+            result = sql2text_bridge.predict(model, db_id, gold_nl_array, input_sql, identifier)
             results.append(result.toDict())
             # result = result + prediction
 
