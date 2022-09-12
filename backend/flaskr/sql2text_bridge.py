@@ -104,16 +104,16 @@ def get_checkpoint_path(model: str) -> str:
     return empty string if model not supported
     """
     if model == 'BiLSTM':
-        return 'Checkpoints/BiLSTM/spider/bilstm_1.pt'
+        return 'Checkpoints/BiLSTM/spider/bilstm_big.pt'
 
     if model == 'Relative-Transformer':
-        return 'Checkpoints/RelativeTransformer/spider/rel_transformer_1.pt'
+        return 'Checkpoints/RelativeTransformer/spider/rel_transformer_big.pt'
 
     if model == 'Transformer':
-        return 'Checkpoints/Transformer/spider/transformer_1.pt'
+        return 'Checkpoints/Transformer/spider/transformer_big.pt'
 
     if model == 'TreeLSTM':
-        return 'Checkpoints/TreeLSTM/spider/tree2seq_3.pt'
+        return 'Checkpoints/TreeLSTM/spider/tree2seq_big.pt'
 
     current_app.logger.error("not supported model %s", model)
     return ''
