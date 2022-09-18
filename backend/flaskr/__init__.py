@@ -1,5 +1,4 @@
 import os
-from flask_request_id import RequestID
 
 from flask import Flask
 
@@ -30,8 +29,6 @@ def create_app(test_config=None):
     from flaskr import homepage
     app.register_blueprint(homepage.bp)
 
-    # generate requestID for once
-    _ = RequestID(app)
     app.logger.propagate = False
 
     return app
