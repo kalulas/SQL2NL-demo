@@ -29,7 +29,7 @@ export default {
   <input type="checkbox" :checked="selected" :value="title" @change="onToggleValueChanged">
   <!-- <span class="slider round"></span> -->
 </label>
-<label>{{ title }}</label>
+<label class="article-content-text">{{ title }}</label>
 </div>
 </template>
 

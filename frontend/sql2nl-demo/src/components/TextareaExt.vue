@@ -13,7 +13,7 @@ export default {
         <div v-if="showSubmitButton" class="common-input-button-container">
             <button type="submit" class="common-input-button" :disabled="disableSubmitButton" @click="$emit('submit')">
                 <!-- <i class="fa-regular fa-circle-up fa-xl"> 确认 </i> -->
-                <div class="submit-button-text">提交</div>
+                <div class="article-content-text" style="font-weight: bold;">提交</div>
             </button>
         </div>
     </div>
@@ -40,10 +40,6 @@ export default {
 
 .common-input-button {
     padding: 10px;
-}
-
-.submit-button-text {
-    font-family: 宋体;
 }
 
 </style>

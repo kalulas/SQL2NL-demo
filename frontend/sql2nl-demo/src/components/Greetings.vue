@@ -22,7 +22,6 @@ defineProps({
 h1 {
   font-weight: bold;
   font-size: 2.0rem;
-  font-family: 宋体;
   top: -10px;
 }
 
