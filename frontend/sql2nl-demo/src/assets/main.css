@@ -12,7 +12,12 @@ a,
 .title-text {
   text-decoration: none;
   /* color: rgb(255, 179, 0); */
+  font-family: 'Times New Roman', 宋体;
   transition: 0.4s;
+}
+
+.article-content-text{
+  font-family: 'Times New Roman', 宋体;
 }
 
 @media (hover: hover) {

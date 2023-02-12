@@ -15,9 +15,9 @@
     
     <template>
     <!-- <select name="subject" id="subject"> -->
-    <select @change="onDropdownSelect">
-        <option value="none">select db_id here</option>
-        <option v-for="(item, index) in dropdownItems" :value="item" :selected="index == selected">{{ item }}</option>
+    <select @change="onDropdownSelect" class="article-content-text">
+        <option value="none" class="article-content-text">select db_id here</option>
+        <option v-for="(item, index) in dropdownItems" :value="item" :selected="index == selected" class="article-content-text">{{ item }}</option>
     </select>
     </template>
     
