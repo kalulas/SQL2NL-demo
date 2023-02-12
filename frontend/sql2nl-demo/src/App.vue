@@ -11,7 +11,7 @@ export default {
   data() {
     return {
       proccessingRequestCount: 0,
-      titleMessage: "SQL2NL模型的组合泛化能力评估系统",
+      titleMessage: "SQL-to-text模型组合泛化能力评估系统",
       inputPlaceholder: "在此处输入需要处理的sql语句...",
       goldInputPlaceholder: "在此处输入参考答案...（可选，填写后输出评分）",
       outputPlaceholder: "输出结果会显示在这里...",
@@ -151,7 +151,7 @@ export default {
     :title="model.name" :selected="model.selected" :id="model.id" :selectedModels="selectedModels" @update:selectedModels="updateSelected" :key="model.id"/>
   </div>
   <div class="content-item">
-    <label class="content-item-title">db_id</label>
+    <label class="content-item-title">数据库</label>
     <CascadingDropdown :dropdownItems="db_ids" @dropdownItemSelected="onDatabaseSelected"/>
   </div>
   <div class="content-item">
@@ -159,14 +159,14 @@ export default {
     <TextareaExt :placeholder="inputPlaceholder" :readonly="false" :showSubmitButton="false" :value="inputValue" :overrideHeight=60 @update:value="updateInputValue"/>
   </div>
   <div class="content-item">
-    <label class="content-item-title">GOLD-NL</label>
+    <label class="content-item-title">参考翻译结果</label>
     <TextareaExt :placeholder="goldInputPlaceholder" :readonly="false" :showSubmitButton="true" :disableSubmitButton="isRequestProcessing" :value="goldInputValue" :overrideHeight=60 @update:value="updateGoldInputValue" @submit="requestPredict"/>
   </div>
   <div v-show="isRequestProcessing" class="content-item" style="justify-content: center;">
     <img alt="now loading..." src="./assets/Pulse-1s-200px.gif"/>
   </div>
   <div class="content-item">
-    <label class="content-item-title">NL</label>
+    <label class="content-item-title">模型翻译结果</label>
     <TextareaExt :placeholder="outputPlaceholder" :readonly="true" :showSubmitButton="false" :overrideHeight=320 v-model:value="outputValue"/>
   </div>
 </template>
@@ -198,7 +198,9 @@ header {
 
 .content-item-title{
   display: inline-block;
-  width: 64px;
+  font-family: 宋体;
+  font-weight: bold;
+  width: 96px;
   margin-right: 20px;
 }
 
