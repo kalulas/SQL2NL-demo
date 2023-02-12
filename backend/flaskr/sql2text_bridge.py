@@ -20,6 +20,9 @@ TRAIN_SEQ_DATASET_KEY = "train_seq_dataset"
 TRAIN_TREE_DATASET_KEY = "train_tree_dataset"
 TRAIN_RGT_DATASET_KEY = "train_rgt_dataset"
 TRAIN_TABLE_FILE_PATH = "Dataset/spider/tables.json"
+TRAIN_DATA_FILES = [
+    "Dataset/spider_composed/train.json",
+]
 
 MODEL_BILSTM = "BiLSTM"
 MODEL_TRANSFORMER = "ABS"
@@ -27,12 +30,15 @@ MODEL_RELATIVE_TRANSFORMER = "REL"
 MODEL_TREELSTM = "TreeLSTM"
 MODEL_RGT = "RGT"
 
+BILSTM_CHECKPOINT_PATH = "Checkpoints/BiLSTM/spider/bilstm_basic_4.pt"
+TRANSFORMER_CHECKPOINT_PATH = "Checkpoints/Transformer/spider/abs_basic_4.pt"
+RELATIVE_TRANSFORMER_CHECKPOINT_PATH = "Checkpoints/RelativeTransformer/spider/rel_basic_4.pt"
+TREELSTM_CHECKPOINT_PATH = "Checkpoints/TreeLSTM/spider/treelstm_basic_4.pt"
+RGT_CHECKPOINT_PATH = "Checkpoints/RGT/spider/rgt_basic_4.pt"
+
 # contains name abbreviations of all supported models
 SUPPORTED_MODELS = [MODEL_BILSTM, MODEL_TRANSFORMER,
                     MODEL_RELATIVE_TRANSFORMER, MODEL_TREELSTM, MODEL_RGT]
-TRAIN_DATA_FILES = [
-    "Dataset/spider_composed/train.json",
-]
 
 device = torch.device("cuda:0")
 train_seq_dataset: Dataset = None
@@ -122,19 +128,19 @@ def get_checkpoint_path(model: str) -> str:
     return empty string if model not supported
     """
     if model == MODEL_BILSTM:
-        return 'Checkpoints/BiLSTM/spider/bilstm_basic_4.pt'
+        return BILSTM_CHECKPOINT_PATH
 
     if model == MODEL_RELATIVE_TRANSFORMER:
-        return 'Checkpoints/RelativeTransformer/spider/rel_basic_4.pt'
+        return RELATIVE_TRANSFORMER_CHECKPOINT_PATH
 
     if model == MODEL_TRANSFORMER:
-        return 'Checkpoints/Transformer/spider/abs_basic_4.pt'
+        return TRANSFORMER_CHECKPOINT_PATH
 
     if model == MODEL_TREELSTM:
-        return 'Checkpoints/TreeLSTM/spider/treelstm_basic_4.pt'
+        return TREELSTM_CHECKPOINT_PATH
 
     if model == MODEL_RGT:
-        return 'Checkpoints/RGT/spider/rgt_basic_4.pt'
+        return RGT_CHECKPOINT_PATH
 
     current_app.logger.error("not supported model %s", model)
     return ''
