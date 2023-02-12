@@ -55,7 +55,7 @@ def predict(model_name: str, db_id: str, gold_nl_array: str, input_sql: str, inp
         return result
 
     # current_app.logger.info(f"you are on bridge, torch version:{torch.__version__}")
-    input_identifier = f"{input_identifier}@{model_name}"
+    input_identifier = f"{input_identifier}.{model_name}"
     jsonTargetPath = file_utils.build_input_sql_json(
         db_id, gold_nl_array, input_sql, input_identifier)
     if jsonTargetPath == "":

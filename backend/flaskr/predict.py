@@ -21,7 +21,8 @@ def predict_index():
     request_ext = RequestID(current_app)
     current_app.logger.critical("RequestID is %s", request_ext.id)
     
-    identifier = utils.generate_request_id(request.remote_addr)
+    # identifier = utils.generate_request_id(request.remote_addr)
+    identifier = request_ext.id
     if request.method == 'GET':
         return redirect('/../') # to home page
     
