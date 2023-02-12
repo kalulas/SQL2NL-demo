@@ -46,8 +46,7 @@ def predict_index():
 
 @bp.route('/models/', methods=['POST'])
 def process_models_request():
-    available_models = ["Transformer", "Relative-Transformer", "BiLSTM", "TreeLSTM"]
-    # result = json.dumps(available_models)
+    available_models = sql2text_bridge.SUPPORTED_MODELS
     return jsonify(available_models)
 
 @bp.route('/databases/', methods=['POST'])

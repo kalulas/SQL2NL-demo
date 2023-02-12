@@ -18,8 +18,14 @@ MAX_DECODE = 500
 TRAIN_SEQ_DATASET_KEY = "train_seq_dataset"
 TRAIN_TREE_DATASET_KEY = "train_tree_dataset"
 TRAIN_TABLE_FILE_PATH = "Dataset/spider/tables.json"
-SUPPORTED_MODELS = ["BiLSTM", "Relative-Transformer",
-                    "Transformer", "TreeLSTM"]
+
+MODEL_BILSTM = "BiLSTM"
+MODEL_TRANSFORMER = "ABS"
+MODEL_RELATIVE_TRANSFORMER = "REL"
+MODEL_TREELSTM = "TreeLSTM"
+MODEL_RGT = "RGT"
+
+SUPPORTED_MODELS = [MODEL_BILSTM, MODEL_TRANSFORMER, MODEL_RELATIVE_TRANSFORMER, MODEL_TREELSTM]
 TRAIN_DATA_FILES = [
     "Dataset/spider_composed/train.json",
 ]
@@ -30,30 +36,30 @@ train_tree_dataset: Dataset = None
 checkpoint_dict: dict = {}
 
 
-def predict(model:str, db_id:str, gold_nl_array:str, input_sql:str, input_identifier:str) -> EvaluationResult:
+def predict(model_name:str, db_id:str, gold_nl_array:str, input_sql:str, input_identifier:str) -> EvaluationResult:
     result = EvaluationResult()
-    result.modelName = model
+    result.modelName = model_name
     result.original = input_sql
     # score is considered only gold_nl is passed in
     result.hasScore = gold_nl_array != None and gold_nl_array != ""
 
-    if model not in SUPPORTED_MODELS:
-        error_msg = f"model '{model}' is not in supported models {SUPPORTED_MODELS}!"
+    if model_name not in SUPPORTED_MODELS:
+        error_msg = f"model '{model_name}' is not in supported models {SUPPORTED_MODELS}!"
         current_app.logger.error(error_msg)
         result.failedReason = error_msg
         return result
 
     # current_app.logger.info(f"you are on bridge, torch version:{torch.__version__}")
-    input_identifier = f"{input_identifier}@{model}"
+    input_identifier = f"{input_identifier}@{model_name}"
     jsonTargetPath = file_utils.build_input_sql_json(
         db_id, gold_nl_array, input_sql, input_identifier)
     if jsonTargetPath == "":
-        error_msg = f"build json file for model '{model}' input_sql '{input_sql}' failed!"
+        error_msg = f"build json file for model '{model_name}' input_sql '{input_sql}' failed!"
         current_app.logger.error(error_msg)
         result.failedReason = error_msg
         return result
 
-    run_sql2text(model, jsonTargetPath, result)
+    run_sql2text(model_name, jsonTargetPath, result)
     return result
 
 
@@ -103,18 +109,19 @@ def get_checkpoint_path(model: str) -> str:
     """
     return empty string if model not supported
     """
-    if model == 'BiLSTM':
+    if model == MODEL_BILSTM:
         return 'Checkpoints/BiLSTM/spider/bilstm_basic_4.pt'
 
-    if model == 'Relative-Transformer':
+    if model == MODEL_RELATIVE_TRANSFORMER:
         return 'Checkpoints/RelativeTransformer/spider/rel_basic_4.pt'
 
-    if model == 'Transformer':
+    if model == MODEL_TRANSFORMER:
         return 'Checkpoints/Transformer/spider/abs_basic_4.pt'
 
-    if model == 'TreeLSTM':
+    if model == MODEL_TREELSTM:
         return 'Checkpoints/TreeLSTM/spider/treelstm_basic_4.pt'
 
+    # if model == ''
     # backend/sql2text-reference/Checkpoints/RGT/spider/rgt_basic_4.pt
 
     current_app.logger.error("not supported model %s", model)
@@ -122,12 +129,12 @@ def get_checkpoint_path(model: str) -> str:
 
 
 def get_train_dataset(model: str) -> Dataset:
-    if model in ['Relative-Transformer', 'Transformer', 'BiLSTM']:
+    if model in [MODEL_RELATIVE_TRANSFORMER, MODEL_TRANSFORMER, MODEL_BILSTM]:
         if train_seq_dataset is None:
             current_app.logger.error("%s is not setup!", TRAIN_SEQ_DATASET_KEY)
 
         return train_seq_dataset
-    elif model == 'TreeLSTM':
+    elif model == MODEL_TREELSTM:
         if train_tree_dataset is None:
             current_app.logger.error("%s is not setup!", TRAIN_TREE_DATASET_KEY)
 
@@ -141,11 +148,11 @@ def build_dataset(model: str, user_request_data_file: str) -> Dataset:
     test_data_files = [user_request_data_file]
 
     test_set = None
-    if model in ['Relative-Transformer', 'Transformer', 'BiLSTM']:
+    if model in [MODEL_RELATIVE_TRANSFORMER, MODEL_TRANSFORMER, MODEL_BILSTM]:
         train_set = get_train_dataset(model)
         test_set = SeqDataset(
             test_data_files, TRAIN_TABLE_FILE_PATH, vocab=train_set.vocab)
-    elif model == 'TreeLSTM':
+    elif model == MODEL_TREELSTM:
         train_set = get_train_dataset(model)
         test_set = TreeDataset(
             test_data_files, TRAIN_TABLE_FILE_PATH, vocab=train_set.vocab)
@@ -155,16 +162,16 @@ def build_dataset(model: str, user_request_data_file: str) -> Dataset:
     return test_set
 
 
-def build_model(args, vocab) -> torch.nn.Module:
+def build_model(model_name: str, args, vocab) -> torch.nn.Module:
     if args is None or vocab is None:
         return None
 
-    if args.model == "BiLSTM":
+    if model_name == MODEL_BILSTM:
         return BiLSTM(args.down_embed_dim, vocab.size, args.hid_size,
                       vocab.pad_idx, args.dropout, args.max_oov_num,
                       args.copy)
 
-    if args.model == "Relative-Transformer":
+    if model_name == MODEL_RELATIVE_TRANSFORMER:
         return RelativeTransformer(args.down_embed_dim, vocab.size,
                                    args.down_d_model, args.down_d_ff,
                                    args.down_head_num, args.down_layer_num,
@@ -172,7 +179,7 @@ def build_model(args, vocab) -> torch.nn.Module:
                                    args.down_max_dist, args.max_oov_num,
                                    args.copy, args.rel_share, args.k_v_share)
 
-    if args.model == "Transformer":
+    if model_name == MODEL_TRANSFORMER:
         return AbsoluteTransformer(args.down_embed_dim,
                                    vocab.size,
                                    args.down_d_model,
@@ -186,12 +193,12 @@ def build_model(args, vocab) -> torch.nn.Module:
                                    copy=args.copy,
                                    pos=args.absolute_pos)
 
-    if args.model == "TreeLSTM":
+    if model_name == MODEL_TREELSTM:
         return TreeLSTM(args.down_embed_dim, vocab.size, TYPE_NUM,
                         args.hid_size, args.dropout, vocab.pad_idx,
                         args.max_oov_num, args.copy)
 
-    current_app.logger.error("not supported model %s", args.model)
+    current_app.logger.error("not supported model %s", model_name)
     return None
 
 
@@ -205,15 +212,15 @@ def evaluate(model: torch.nn.Module, dataset, vocab, args, model_name) -> Tuple[
 
     for batch_data in dataloader:
         preds = []
-        if model_name in ["Relative-Transformer", "Transformer", "BiLSTM"]:
+        if model_name in [MODEL_RELATIVE_TRANSFORMER, MODEL_TRANSFORMER, MODEL_BILSTM]:
             batch, _ = get_seq_batch_data(
                 batch_data, vocab.pad_idx, device, vocab.size, vocab.unk_idx, args.down_max_dist)
             nodes, questions, rela_dist, copy_mask, src2trg_map = batch
-            if model_name == "Relative-Transformer":
+            if model_name == MODEL_RELATIVE_TRANSFORMER:
                 nodes, hidden, mask = model.encode(nodes, rela_dist)
-            else:  # "Transformer", "BiLSTM"
+            else:  # MODEL_TRANSFORMER, MODEL_BILSTM
                 nodes, hidden, mask = model.encode(nodes)
-        elif model_name == "TreeLSTM":
+        elif model_name == MODEL_TREELSTM:
             batch, _ = get_tree_batch_data(batch_data, device)
             nodes, types, node_order, adjacency_list, edge_order, questions, copy_mask, src2trg_map = batch
             nodes, hidden, mask = model.encode(
@@ -242,30 +249,30 @@ def evaluate(model: torch.nn.Module, dataset, vocab, args, model_name) -> Tuple[
     return prediction, score
 
 
-def run_sql2text(model: str, user_input_json_path: str, result:EvaluationResult):
+def run_sql2text(model_name: str, user_input_json_path: str, result:EvaluationResult):
     try:
-        if model not in checkpoint_dict.keys():
-            reason = f"checkpoint for model {model} is not loaded yet"
+        if model_name not in checkpoint_dict.keys():
+            reason = f"checkpoint for model {model_name} is not loaded yet"
             current_app.logger.error(reason)
             result.failedReason = reason
             return
 
-        checkpoint = checkpoint_dict[model]
+        checkpoint = checkpoint_dict[model_name]
         checkpoint_args = checkpoint['args']
         # build default args
         checkpoint_args.data = "spider"
         checkpoint_args.eval_batch_size = 1
 
-        test_dataset = build_dataset(model, user_input_json_path)
+        test_dataset = build_dataset(model_name, user_input_json_path)
         if test_dataset is None:
-            reason = f"build dataset for {model} failed"
+            reason = f"build dataset for {model_name} failed"
             current_app.logger.error(reason)
             result.failedReason = reason
             return
 
-        model = build_model(checkpoint_args, test_dataset.vocab)
+        model = build_model(model_name, checkpoint_args, test_dataset.vocab)
         if model is None:
-            reason = f"build model for {model} failed"
+            reason = f"build model for {model_name} failed"
             current_app.logger.error(reason)
             result.failedReason = reason
             return
@@ -273,9 +280,9 @@ def run_sql2text(model: str, user_input_json_path: str, result:EvaluationResult)
         model.to(device)
         model.load_state_dict(checkpoint['model'])
         current_app.logger.info(
-            "%s is ready, start evaluate...", checkpoint_args.model)
+            "%s is ready, start evaluate...", model_name)
         prediction, score = evaluate(
-            model, test_dataset, test_dataset.vocab, checkpoint_args, checkpoint_args.model)
+            model, test_dataset, test_dataset.vocab, checkpoint_args, model_name)
         result.result = prediction
         result.score = score
         result.success = True
