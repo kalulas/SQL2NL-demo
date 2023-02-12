@@ -21,7 +21,7 @@ TRAIN_TABLE_FILE_PATH = "Dataset/spider/tables.json"
 SUPPORTED_MODELS = ["BiLSTM", "Relative-Transformer",
                     "Transformer", "TreeLSTM"]
 TRAIN_DATA_FILES = [
-    "./Dataset/spider_composed_tree2seq/train.json",
+    "Dataset/spider_composed/train.json",
 ]
 
 device = torch.device("cuda:0")
@@ -104,16 +104,18 @@ def get_checkpoint_path(model: str) -> str:
     return empty string if model not supported
     """
     if model == 'BiLSTM':
-        return 'Checkpoints/BiLSTM/spider/bilstm_big.pt'
+        return 'Checkpoints/BiLSTM/spider/bilstm_basic_4.pt'
 
     if model == 'Relative-Transformer':
-        return 'Checkpoints/RelativeTransformer/spider/rel_transformer_big.pt'
+        return 'Checkpoints/RelativeTransformer/spider/rel_basic_4.pt'
 
     if model == 'Transformer':
-        return 'Checkpoints/Transformer/spider/transformer_big.pt'
+        return 'Checkpoints/Transformer/spider/abs_basic_4.pt'
 
     if model == 'TreeLSTM':
-        return 'Checkpoints/TreeLSTM/spider/tree2seq_big.pt'
+        return 'Checkpoints/TreeLSTM/spider/treelstm_basic_4.pt'
+
+    # backend/sql2text-reference/Checkpoints/RGT/spider/rgt_basic_4.pt
 
     current_app.logger.error("not supported model %s", model)
     return ''
